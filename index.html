@@ -24,9 +24,49 @@
 }
 html { scroll-behavior: smooth; }
 ::selection { background: var(--red); color: #f6f4ee; }
-body { background:var(--bg); color:var(--text-primary); font-family:var(--font-serif); font-weight:380; overflow-x:clip; }
-main { padding:0 0 40px; }
+body { background:var(--bg); color:var(--text-primary); font-family:var(--font-serif); font-weight:380; overflow:hidden; }
 .wm-x, .x-mark { color: var(--red); font-style: normal; }
+
+/* ── Slideshow deck ─────────────────────────────────── */
+.deck {
+  display: flex; height: 100vh; height: 100svh; width: 100vw;
+  overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x mandatory; scroll-behavior: smooth;
+  scrollbar-width: none; -ms-overflow-style: none;
+}
+.deck::-webkit-scrollbar { display: none; }
+.slide {
+  flex: 0 0 100vw; width: 100vw; height: 100vh; height: 100svh;
+  scroll-snap-align: start; scroll-snap-stop: always;
+  overflow-y: auto; overflow-x: hidden; position: relative;
+  scrollbar-width: none; -ms-overflow-style: none;
+}
+.slide::-webkit-scrollbar { display: none; }
+.slide-center { display: flex; flex-direction: column; justify-content: center; }
+#gallery { display: contents; }
+.splash.slide { height: 100vh; height: 100svh; }
+
+/* Slideshow controls */
+.deck-controls {
+  position: fixed; z-index: 90; bottom: clamp(16px, 3vh, 30px); right: clamp(16px, 3vw, 34px);
+  display: flex; align-items: center; gap: 14px;
+  opacity: 0; transform: translateY(8px); transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.deck-controls.on { opacity: 1; transform: none; }
+.deck-progress {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em;
+  color: var(--text-muted); min-width: 58px; text-align: center; font-variant-numeric: tabular-nums;
+}
+.deck-arrow {
+  width: 38px; height: 38px; border-radius: 50%; border: 0.5px solid var(--border-strong);
+  background: color-mix(in srgb, var(--bg) 80%, transparent); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  color: var(--text-secondary); font-size: 15px; cursor: pointer; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.deck-arrow:hover:not(:disabled) { color: var(--text-primary); border-color: var(--text-primary); }
+.deck-arrow:disabled { opacity: 0.28; cursor: default; }
+@media (prefers-reduced-motion: reduce) { .deck { scroll-behavior: auto; } }
 
 /* ── Splash ─────────────────────────────────────────── */
 .splash {
@@ -93,7 +133,7 @@ main { padding:0 0 40px; }
 .splash-foot .sf-mid { text-align: center; }
 .splash-foot .sf-r { text-align: right; }
 .scroll-cue { display: inline-block; animation: cue-drift 2.6s ease-in-out 2s infinite; }
-@keyframes cue-drift { 0%,100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+@keyframes cue-drift { 0%,100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
 @media (max-width: 700px) {
   .splash-top { flex-wrap: wrap; font-size: 9px; letter-spacing: 0.18em; }
   .splash-tag { letter-spacing: 0.14em; }
@@ -356,7 +396,8 @@ canvas.board { width:100%; aspect-ratio:1; display:block; border:0.5px solid var
   <a href="#colophon">Colophon</a>
 </nav>
 
-<header class="splash" id="top">
+<div class="deck" id="deck">
+<header class="splash slide" id="top">
   <canvas id="splash-canvas" aria-hidden="true"></canvas>
   <div class="splash-top">
     <span>An excavation by <a href="https://dpm.so" target="_blank" rel="noopener">DPM</a></span>
@@ -369,12 +410,11 @@ canvas.board { width:100%; aspect-ratio:1; display:block; border:0.5px solid var
     <p class="splash-sub">A study of movement and tension, conflict, skill, and nerve — emergent from plotting notation across a series of iconic chess matches spanning two centuries.</p>
   </div>
   <div class="splash-foot">
-    <span class="sf-r">Scroll<br><span class="scroll-cue">&darr;</span></span>
+    <span class="sf-r">Scroll<br><span class="scroll-cue">&rarr;</span></span>
   </div>
 </header>
 
-<main>
-  <section class="statement reveal">
+  <section class="statement slide slide-center reveal">
     <div class="statement-kicker">Exhibition statement</div>
     <p class="statement-lead">Every game of chess leaves a drawing behind — thirty or forty lines, a handful of red crosses, and <em>nothing else</em>. These ten survive.</p>
     <div class="statement-cols">
@@ -388,12 +428,12 @@ canvas.board { width:100%; aspect-ratio:1; display:block; border:0.5px solid var
       </div>
     </div>
   </section>
-  <section class="index reveal" id="index">
+  <section class="index slide slide-center reveal" id="index">
     <div class="index-kicker">Index &mdash; ten works</div>
     <div class="index-list" id="index-list"></div>
   </section>
   <div id="gallery"></div>
-  <footer class="colophon reveal" id="colophon">
+  <footer class="colophon slide slide-center reveal" id="colophon">
     <div class="colophon-mark">en passant<span class="x-mark">&hairsp;×</span></div>
     <div class="colophon-grid">
       <span>Ten canonical chess games<br>1851 &mdash; 1999</span>
@@ -401,7 +441,13 @@ canvas.board { width:100%; aspect-ratio:1; display:block; border:0.5px solid var
       <span class="cg-r">In passing, taken<br><a href="#top" style="color:inherit">Return to the top &uarr;</a></span>
     </div>
   </footer>
-</main>
+</div>
+
+<div class="deck-controls" id="deck-controls" aria-hidden="true">
+  <button class="deck-arrow" id="deck-prev" aria-label="Previous section">&larr;</button>
+  <span class="deck-progress" id="deck-progress">01 / 01</span>
+  <button class="deck-arrow" id="deck-next" aria-label="Next section">&rarr;</button>
+</div>
 <script>
 const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 const CONFIGS = {
@@ -1203,7 +1249,7 @@ games.forEach(game => {
     { cfgType:winW?'white':'black', label:winW?game.white:game.black, role:'Winner ★', flipped:!winW, showW:true, showB:true, movesFilter:'full', caption:`${winW?'White':'Black'} ground · full game · from ${winW?game.white:game.black}` },
   ];
 
-  const card = document.createElement('div'); card.className='game-card';
+  const card = document.createElement('div'); card.className='game-card slide';
   card.id = 'work-' + game.index;
 
   // Full-viewport plate for the triptych, wall text below
@@ -1366,15 +1412,84 @@ games.forEach(g => {
   a.title = g.title;
   topbarNav.appendChild(a);
 });
-let topbarTicking = false;
-window.addEventListener('scroll', () => {
-  if (topbarTicking) return;
-  topbarTicking = true;
-  requestAnimationFrame(() => {
-    topbar.classList.toggle('on', window.scrollY > window.innerHeight * 0.72);
-    topbarTicking = false;
+// ── Horizontal slideshow deck ─────────────────────────
+const deck = document.getElementById('deck');
+const deckControls = document.getElementById('deck-controls');
+const prevBtn = document.getElementById('deck-prev');
+const nextBtn = document.getElementById('deck-next');
+const progressEl = document.getElementById('deck-progress');
+const pad2 = n => String(n).padStart(2, '0');
+const panels = () => Array.from(document.querySelectorAll('.slide'));
+let deckIndex = 0;
+
+function updateDeckUI() {
+  const total = panels().length;
+  deckIndex = Math.max(0, Math.min(total - 1, Math.round(deck.scrollLeft / window.innerWidth)));
+  if (progressEl) progressEl.textContent = pad2(deckIndex + 1) + ' / ' + pad2(total);
+  if (prevBtn) prevBtn.disabled = deckIndex <= 0;
+  if (nextBtn) nextBtn.disabled = deckIndex >= total - 1;
+  if (deckControls) deckControls.classList.add('on');
+  topbar.classList.toggle('on', deckIndex > 0);
+}
+
+function goToDeck(i) {
+  const p = panels();
+  i = Math.max(0, Math.min(p.length - 1, i));
+  p[i].scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', inline: 'start', block: 'nearest' });
+}
+
+if (deck) {
+  let dtick = false;
+  deck.addEventListener('scroll', () => {
+    if (dtick) return; dtick = true;
+    requestAnimationFrame(() => { updateDeckUI(); dtick = false; });
+  }, { passive: true });
+
+  if (prevBtn) prevBtn.onclick = () => goToDeck(deckIndex - 1);
+  if (nextBtn) nextBtn.onclick = () => goToDeck(deckIndex + 1);
+
+  document.addEventListener('keydown', e => {
+    if (document.getElementById('watch-overlay')) return;
+    const tag = (e.target && e.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); goToDeck(deckIndex + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); goToDeck(deckIndex - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); goToDeck(0); }
+    else if (e.key === 'End') { e.preventDefault(); goToDeck(panels().length - 1); }
   });
-}, { passive: true });
+
+  // Vertical wheel advances slides, unless the current slide has room to scroll vertically
+  let wheelLock = false;
+  deck.addEventListener('wheel', e => {
+    if (document.getElementById('watch-overlay')) return;
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    const slide = panels()[deckIndex];
+    if (slide && slide.scrollHeight > slide.clientHeight + 2) {
+      const atTop = slide.scrollTop <= 0;
+      const atBottom = slide.scrollTop + slide.clientHeight >= slide.scrollHeight - 2;
+      if (!((e.deltaY > 0 && atBottom) || (e.deltaY < 0 && atTop))) return;
+    }
+    if (Math.abs(e.deltaY) < 6) return;
+    e.preventDefault();
+    if (wheelLock) return;
+    wheelLock = true;
+    goToDeck(deckIndex + (e.deltaY > 0 ? 1 : -1));
+    setTimeout(() => { wheelLock = false; }, 620);
+  }, { passive: false });
+
+  updateDeckUI();
+}
+
+// In-page anchors move the deck horizontally
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href').slice(1);
+    const target = id && document.getElementById(id);
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', inline: 'start', block: 'nearest' });
+  });
+});
 
 // Reveal on scroll
 const revealEls = document.querySelectorAll('.reveal');
