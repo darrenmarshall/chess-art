@@ -42,9 +42,15 @@ body { background:var(--bg); color:var(--text-primary); font-family:var(--font-s
   scrollbar-width: none; -ms-overflow-style: none;
 }
 .slide::-webkit-scrollbar { display: none; }
-.slide-center { display: flex; flex-direction: column; justify-content: center; }
+.slide-center { display: flex; flex-direction: column; justify-content: safe center; }
 #gallery { display: contents; }
 .splash.slide { height: 100vh; height: 100svh; }
+/* Narrative slides fill the viewport; their content is centered up to 1200px */
+.statement.slide, .index.slide, .colophon.slide {
+  max-width: none; width: 100vw; margin: 0;
+  padding-left: max(32px, calc((100vw - 1200px) / 2));
+  padding-right: max(32px, calc((100vw - 1200px) / 2));
+}
 
 /* Slideshow controls */
 .deck-controls {
@@ -445,7 +451,6 @@ canvas.board { width:100%; aspect-ratio:1; display:block; border:0.5px solid var
 
 <div class="deck-controls" id="deck-controls" aria-hidden="true">
   <button class="deck-arrow" id="deck-prev" aria-label="Previous section">&larr;</button>
-  <span class="deck-progress" id="deck-progress">01 / 01</span>
   <button class="deck-arrow" id="deck-next" aria-label="Next section">&rarr;</button>
 </div>
 <script>
