@@ -47,6 +47,8 @@ main { padding:0 0 40px; }
 }
 .splash-top .st-mid { text-align: center; }
 .splash-top .st-r { text-align: right; }
+.splash-top a { color: var(--text-secondary); text-decoration: none; border-bottom: 0.5px solid var(--border-strong); transition: color 0.15s, border-color 0.15s; }
+.splash-top a:hover { color: var(--text-primary); border-color: var(--text-primary); }
 .splash-mid { position: relative; z-index: 2; padding: 6vh 0; }
 .wordmark {
   font-family: var(--font-serif); color: var(--text-primary);
@@ -144,12 +146,40 @@ main { padding:0 0 40px; }
 /* ── Works ──────────────────────────────────────────── */
 .game-card { border-top: 0.5px solid var(--border-strong); scroll-margin-top: 0; }
 .colophon { scroll-margin-top: 52px; }
-.plate {
+.work-carousel { position: relative; overflow: hidden; }
+.work-track {
+  display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+  scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;
+}
+.work-track::-webkit-scrollbar { display: none; }
+.work-slide {
+  flex: 0 0 100%; width: 100%; scroll-snap-align: start;
   min-height: 100vh; min-height: 100svh;
   display: flex; flex-direction: column; justify-content: center;
-  padding: 72px var(--pad) 36px; gap: clamp(20px, 3.5vh, 36px);
+  padding: clamp(84px, 13vh, 140px) var(--pad) clamp(56px, 9vh, 96px);
 }
-.wall { max-width: 1200px; margin: 0 auto; width: 100%; padding: clamp(30px, 6vh, 70px) 32px clamp(70px, 11vh, 120px); }
+.slide-inner { max-width: 1200px; margin: 0 auto; width: 100%; }
+.work-cta {
+  display: inline-flex; align-items: center; gap: 10px; align-self: flex-start;
+  margin-top: clamp(30px, 4.5vh, 52px);
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--text-primary); background: transparent;
+  border: 0.5px solid var(--border-strong); border-radius: 40px;
+  padding: 12px 22px; cursor: pointer; transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+.work-cta:hover { background: var(--text-primary); color: var(--bg); border-color: var(--text-primary); }
+.cta-arrow { display: inline-block; transition: transform 0.18s; }
+.work-cta:hover .cta-arrow { transform: translateX(4px); }
+.work-cta:hover .cta-arrow.back { transform: translateX(-4px); }
+.carousel-dots {
+  position: absolute; bottom: clamp(20px, 3vh, 34px); left: 0; right: 0;
+  display: flex; justify-content: center; gap: 10px; z-index: 3; pointer-events: none;
+}
+.carousel-dots button {
+  pointer-events: auto; width: 7px; height: 7px; padding: 0; border-radius: 50%;
+  border: 0.5px solid var(--border-strong); background: transparent; cursor: pointer;
+  transition: background 0.2s; }
+.carousel-dots button.on { background: var(--text-primary); border-color: var(--text-primary); }
 .card-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
 .game-index {
   font-size: 10px; letter-spacing: 0.24em; color: var(--red);
@@ -183,7 +213,9 @@ canvas.board { width:100%; aspect-ratio:1; display:block; border:0.5px solid var
 @media (max-width:900px) {
   .card-body{grid-template-columns:1fr}
   .panels{grid-template-columns:1fr}
-  .plate{ min-height:auto; padding-top:64px; }
+  .intro-body{ grid-template-columns:1fr; gap:28px; }
+  .match-footer{ grid-template-columns:1fr; }
+  .work-slide{ min-height:auto; padding-top:96px; }
   .panel-wrap{ max-width:min(100%, 72svh); }
   .game-era{ display:none; }
 }
@@ -206,6 +238,38 @@ canvas.board { width:100%; aspect-ratio:1; display:block; border:0.5px solid var
 .bio-pivot { font-size:13px; color:var(--text-secondary); line-height:1.75; margin-top:14px; padding-top:14px; border-top:0.5px solid var(--border); font-style:italic; }
 .bio-why { font-size:13px; color:var(--text-secondary); line-height:1.75; margin-top:8px; max-width:880px; }
 .bio-why-title { font-size:9.5px; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-muted); font-family:var(--font-mono); margin-top:26px; margin-bottom:8px; }
+
+/* ── Intro slide (overview / setting / pattern) ─────── */
+.intro-body { display:grid; grid-template-columns:1fr 1fr; gap:32px 64px; margin-top:clamp(30px,5vh,54px); }
+.intro-section {}
+.intro-label { font-size:9.5px; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:12px; }
+.intro-text { font-size:15px; line-height:1.72; color:var(--text-secondary); font-weight:360; }
+.intro-text em { font-style:italic; color:var(--text-primary); }
+.intro-text + .intro-text { margin-top:12px; }
+.pattern-analysis { margin-top:clamp(28px,4vh,44px); padding-top:clamp(22px,3vh,30px); border-top:0.5px solid var(--border); max-width:920px; }
+
+/* ── Match slide (boards / notation / player bios) ──── */
+.match-head { margin-bottom:clamp(26px,4vh,40px); }
+.match-head .game-index { color:var(--red); }
+.board-frame { position:relative; }
+.player-tip {
+  position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end;
+  gap:8px; padding:18px; border:0.5px solid var(--border-strong);
+  background:linear-gradient(to top, color-mix(in srgb, var(--bg) 94%, transparent) 55%, color-mix(in srgb, var(--bg) 40%, transparent));
+  -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);
+  opacity:0; pointer-events:none; transition:opacity 0.22s ease;
+}
+.board-frame:hover .player-tip, .player-tip.show { opacity:1; }
+.player-tip .pt-name { font-family:var(--font-serif); font-style:italic; font-weight:400; font-size:16px; letter-spacing:-0.01em; color:var(--text-primary); }
+.player-tip .pt-text { font-size:12px; line-height:1.62; color:var(--text-secondary); overflow-y:auto; max-height:62%; }
+.board-hint {
+  font-size:8.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted);
+  font-family:var(--font-mono); margin-top:6px; opacity:0.7;
+}
+.match-footer { display:grid; grid-template-columns:1fr 1fr; gap:24px 64px; margin-top:clamp(26px,4vh,42px); padding-top:clamp(22px,3vh,30px); border-top:0.5px solid var(--border); }
+.notation-block { text-align:left; }
+@media (min-width:901px) { .notation-block { text-align:right; } }
+.notation-block .pgn-title { margin-bottom:12px; }
 
 /* ── Colophon ───────────────────────────────────────── */
 .colophon { border-top:0.5px solid var(--border-strong); max-width:1200px; margin:0 auto; padding: clamp(60px,10vh,110px) 32px 30px; }
@@ -333,7 +397,7 @@ canvas.board { width:100%; aspect-ratio:1; display:block; border:0.5px solid var
 <header class="splash" id="top">
   <canvas id="splash-canvas" aria-hidden="true"></canvas>
   <div class="splash-top">
-    <span>An exhibition in ten games</span>
+    <span>An excavation by <a href="https://dpm.so" target="_blank" rel="noopener">DPM</a></span>
     <span class="st-r">1851 &mdash; 1999</span>
   </div>
   <div class="splash-mid">
@@ -341,10 +405,9 @@ canvas.board { width:100%; aspect-ratio:1; display:block; border:0.5px solid var
       <span class="wm-mask"><span class="wm-line"><em class="wm-en">en</em>&hairsp; passant<span class="wm-x">×</span></span></span>
     </h1>
     <p class="splash-sub">A study of movement and tension, conflict, skill, and nerve — emergent from plotting notation across a series of iconic chess matches spanning two centuries.</p>
-    <p class="splash-tag">Ten canonical chess games, scored as drawings &middot; 1851 &mdash; 1999</p>
   </div>
   <div class="splash-foot">
-    <span class="sf-r">The exhibition begins below<br><span class="scroll-cue">&darr;</span></span>
+    <span class="sf-r">Scroll<br><span class="scroll-cue">&darr;</span></span>
   </div>
 </header>
 
@@ -1166,28 +1229,80 @@ function closeOverlay() {
 
 const gallery = document.getElementById('gallery');
 
+// Condense a long "why" narrative into a short pattern-analysis excerpt.
+function shortenWhy(text) {
+  const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+  let out = '';
+  for (const s of sentences) {
+    if (out && (out.length + s.length) > 340) break;
+    out += s;
+    if (out.length > 220) break;
+  }
+  return (out || text).trim();
+}
+
+const hoverCapable = !(window.matchMedia && window.matchMedia('(hover: none)').matches);
+
 games.forEach(game => {
   const winW = game.winner === 'white';
+  const bio = bios[game.index];
+  const eraMatch = game.note.match(/Era:\s*([^.]+)\./);
+  const era = eraMatch ? eraMatch[1].trim() : '';
+
   const panelDefs = [
-    { cfgType:'white', label:game.white, role:'White', flipped:false, showW:true,  showB:false, movesFilter:'white', caption:'White ground · white moves · from White' },
-    { cfgType:'black', label:game.black, role:'Black', flipped:true,  showW:false, showB:true,  movesFilter:'black', caption:'Black ground · black moves · from Black' },
-    { cfgType:winW?'white':'black', label:winW?game.white:game.black, role:'Winner ★', flipped:!winW, showW:true, showB:true, movesFilter:'full', caption:`${winW?'White':'Black'} ground · full game · from ${winW?game.white:game.black}` },
+    { cfgType:'white', label:game.white, role:'White', flipped:false, showW:true,  showB:false, movesFilter:'white', caption:'White ground · white moves · from White', playerIdx:0 },
+    { cfgType:'black', label:game.black, role:'Black', flipped:true,  showW:false, showB:true,  movesFilter:'black', caption:'Black ground · black moves · from Black', playerIdx:1 },
+    { cfgType:winW?'white':'black', label:winW?game.white:game.black, role:'Winner ★', flipped:!winW, showW:true, showB:true, movesFilter:'full', caption:`${winW?'White':'Black'} ground · full game · from ${winW?game.white:game.black}`, playerIdx: winW?0:1 },
   ];
 
   const card = document.createElement('div'); card.className='game-card';
   card.id = 'work-' + game.index;
 
-  // Full-viewport plate for the triptych, wall text below
-  const plate = document.createElement('div'); plate.className='plate reveal';
-  const wall = document.createElement('div'); wall.className='wall reveal';
+  const carousel = document.createElement('div'); carousel.className='work-carousel';
+  const track = document.createElement('div'); track.className='work-track';
 
-  // Header
+  // ─── Slide 1: The game (overview + historical setting + pattern analysis) ───
+  const introSlide = document.createElement('section'); introSlide.className='work-slide slide-intro reveal';
+  const introInner = document.createElement('div'); introInner.className='slide-inner';
+
   const hdr = document.createElement('div'); hdr.className='card-header';
-  const eraMatch = game.note.match(/Era:\s*([^.]+)\./);
-  hdr.innerHTML=`<div><div class="game-index">Work ${game.index} / 10</div><div class="game-title">${game.title}</div><div class="game-sub">${game.sub}</div></div>${eraMatch ? `<div class="game-era">Era — ${eraMatch[1]}</div>` : ''}`;
-  plate.appendChild(hdr);
+  hdr.innerHTML=`<div><div class="game-index">Work ${game.index} / 10</div><div class="game-title">${game.title}</div><div class="game-sub">${game.sub}</div></div>${era ? `<div class="game-era">Era — ${era}</div>` : ''}`;
+  introInner.appendChild(hdr);
 
-  // Three panels
+  const introBody = document.createElement('div'); introBody.className='intro-body';
+  const ovSec = document.createElement('div'); ovSec.className='intro-section';
+  ovSec.innerHTML=`<div class="intro-label">Overview</div><div class="intro-text">${game.desc}</div>`;
+  introBody.appendChild(ovSec);
+  if (bio) {
+    const hsSec = document.createElement('div'); hsSec.className='intro-section';
+    hsSec.innerHTML=`<div class="intro-label">Historical Setting</div><div class="intro-text">${bio.context}</div>${bio.pivot ? `<div class="intro-text" style="font-style:italic">${bio.pivot}</div>` : ''}`;
+    introBody.appendChild(hsSec);
+  }
+  introInner.appendChild(introBody);
+
+  if (bio && bio.why) {
+    const pa = document.createElement('div'); pa.className='pattern-analysis';
+    pa.innerHTML=`<div class="intro-label">Pattern Analysis</div><div class="intro-text">${shortenWhy(bio.why)}</div>`;
+    introInner.appendChild(pa);
+  }
+
+  const toMatchBtn = document.createElement('button'); toMatchBtn.className='work-cta';
+  toMatchBtn.innerHTML=`Review the match <span class="cta-arrow">&rarr;</span>`;
+  introInner.appendChild(toMatchBtn);
+  introSlide.appendChild(introInner);
+
+  // ─── Slide 2: The match (boards + notation + hover bios) ───
+  const matchSlide = document.createElement('section'); matchSlide.className='work-slide slide-match';
+  const matchInner = document.createElement('div'); matchInner.className='slide-inner';
+
+  const backBtn = document.createElement('button'); backBtn.className='work-cta';
+  backBtn.innerHTML=`<span class="cta-arrow back">&larr;</span> Back to the game`;
+  matchInner.appendChild(backBtn);
+
+  const mHead = document.createElement('div'); mHead.className='match-head';
+  mHead.innerHTML=`<div class="game-index">Work ${game.index} / 10 &middot; The match</div><div class="game-title" style="font-size:clamp(24px,3vw,42px);margin-bottom:6px">${game.title}</div><div class="game-sub">${game.sub}</div>`;
+  matchInner.appendChild(mHead);
+
   const panelGrid = document.createElement('div'); panelGrid.className='panels';
   const canvasDefs = [];
 
@@ -1197,45 +1312,58 @@ games.forEach(game => {
     const nm = document.createElement('div'); nm.className='panel-name'; nm.textContent=p.label;
     const rl = document.createElement('div'); rl.className='panel-role'; rl.textContent=p.role;
     lr.appendChild(nm); lr.appendChild(rl);
+
+    const frame = document.createElement('div'); frame.className='board-frame';
     const cv = document.createElement('canvas'); cv.className='board'; cv.width=900; cv.height=900;
+    frame.appendChild(cv);
+
+    const player = bio && bio.players[p.playerIdx];
+    if (player) {
+      const tip = document.createElement('div'); tip.className='player-tip';
+      tip.innerHTML=`<div class="pt-name">${player.name}</div><div class="pt-text">${player.text}</div>`;
+      frame.appendChild(tip);
+      if (!hoverCapable) {
+        frame.style.cursor = 'pointer';
+        frame.addEventListener('click', () => tip.classList.toggle('show'));
+      }
+    }
+
     const cap = document.createElement('div'); cap.className='panel-caption'; cap.textContent=p.caption;
     const watchBtn = document.createElement('button');
     watchBtn.className='watch-btn'; watchBtn.textContent='Watch';
     watchBtn.style.marginTop='6px'; watchBtn.style.fontSize='9px'; watchBtn.style.padding='2px 9px';
-    wrap.appendChild(lr); wrap.appendChild(cv); wrap.appendChild(cap); wrap.appendChild(watchBtn);
+    wrap.appendChild(lr); wrap.appendChild(frame); wrap.appendChild(cap); wrap.appendChild(watchBtn);
     panelGrid.appendChild(wrap);
     canvasDefs.push({ canvas:cv, cfgType:p.cfgType, flipped:p.flipped, baseShowW:p.showW, baseShowB:p.showB, watchBtn:watchBtn, panelDef:p });
   });
-  plate.appendChild(panelGrid);
+  matchInner.appendChild(panelGrid);
+
+  if (bio) {
+    const hint = document.createElement('div'); hint.className='board-hint';
+    hint.textContent = hoverCapable ? 'Hover a board to read the player' : 'Tap a board to read the player';
+    matchInner.appendChild(hint);
+  }
 
   // Toggles — affect X and line visibility on all panels
   const state = { w:true, b:true };
-  const trow = document.createElement('div'); trow.className='toggle-row';
+  const trow = document.createElement('div'); trow.className='toggle-row'; trow.style.marginTop='14px';
   const tlbl = document.createElement('span'); tlbl.className='toggle-label'; tlbl.textContent='Show:';
   const wBtn = document.createElement('button'); wBtn.className='tog'; wBtn.textContent=game.white;
   const bBtn = document.createElement('button'); bBtn.className='tog'; bBtn.textContent=game.black;
 
   function redrawAll() {
     canvasDefs.forEach(({ canvas, cfgType, flipped, baseShowW, baseShowB }) => {
-      const showW = baseShowW && state.w;
-      const showB = baseShowB && state.b;
-      renderPanel(canvas, cfgType, game.moves, flipped, showW, showB);
+      renderPanel(canvas, cfgType, game.moves, flipped, baseShowW && state.w, baseShowB && state.b);
     });
   }
   wBtn.onclick = () => { state.w=!state.w; wBtn.classList.toggle('off',!state.w); redrawAll(); };
   bBtn.onclick = () => { state.b=!state.b; bBtn.classList.toggle('off',!state.b); redrawAll(); };
-
-  // Wire watch buttons
-  canvasDefs.forEach(({ watchBtn, panelDef }) => {
-    watchBtn.onclick = () => openOverlay(game, panelDef);
-  });
+  canvasDefs.forEach(({ watchBtn, panelDef }) => { watchBtn.onclick = () => openOverlay(game, panelDef); });
   trow.appendChild(tlbl); trow.appendChild(wBtn); trow.appendChild(bBtn);
-  plate.appendChild(trow);
-  card.appendChild(plate);
+  matchInner.appendChild(trow);
 
-  // Description + material specs
-  const body = document.createElement('div'); body.className='card-body';
-  const descDiv = document.createElement('div'); descDiv.className='game-desc'; descDiv.textContent=game.desc;
+  // Footer: material specification (lower-left) + notation (lower-right)
+  const footer = document.createElement('div'); footer.className='match-footer';
   const matDiv = document.createElement('div');
   matDiv.innerHTML=`<div class="mat-block-title">Material Specification</div>
     <div class="mat-grid">
@@ -1245,56 +1373,40 @@ games.forEach(game => {
       <div><div class="mat-label">Nodes</div><div class="mat-value">${game.mat.nodes}</div></div>
     </div>
     <div class="mat-note">${game.note}</div>`;
-  body.appendChild(descDiv); body.appendChild(matDiv);
-  wall.appendChild(body);
+  const notation = document.createElement('div'); notation.className='notation-block';
+  notation.innerHTML=`<div class="pgn-title">Game Notation</div><div class="pgn-text">${game.pgn}</div>`;
+  footer.appendChild(matDiv); footer.appendChild(notation);
+  matchInner.appendChild(footer);
+  matchSlide.appendChild(matchInner);
 
-  // PGN
-  const pgn = document.createElement('div'); pgn.className='pgn-block';
-  pgn.innerHTML=`<div class="pgn-title">Game Notation</div><div class="pgn-text">${game.pgn}</div>`;
-  wall.appendChild(pgn);
+  track.appendChild(introSlide);
+  track.appendChild(matchSlide);
+  carousel.appendChild(track);
 
-  // Bio + historical context
-  const bio = bios[game.index];
-  if (bio) {
-    const bioBlock = document.createElement('div'); bioBlock.className='bio-block';
+  // Progress dots + carousel navigation
+  const dots = document.createElement('div'); dots.className='carousel-dots';
+  const dot0 = document.createElement('button'); dot0.className='on'; dot0.setAttribute('aria-label','The game');
+  const dot1 = document.createElement('button'); dot1.setAttribute('aria-label','The match');
+  dots.appendChild(dot0); dots.appendChild(dot1);
+  carousel.appendChild(dots);
 
-    // Players column
-    const playersCol = document.createElement('div');
-    const playerTitle = document.createElement('div'); playerTitle.className='bio-section-title'; playerTitle.textContent='The Players';
-    playersCol.appendChild(playerTitle);
-    const playersList = document.createElement('div'); playersList.className='bio-players';
-    bio.players.forEach(p => {
-      const pw = document.createElement('div');
-      const pn = document.createElement('div'); pn.className='bio-player-name'; pn.textContent=p.name;
-      const pt = document.createElement('div'); pt.className='bio-player-text'; pt.textContent=p.text;
-      pw.appendChild(pn); pw.appendChild(pt);
-      playersList.appendChild(pw);
+  const goTo = i => track.scrollTo({ left: i * track.clientWidth, behavior: 'smooth' });
+  toMatchBtn.onclick = () => goTo(1);
+  backBtn.onclick = () => goTo(0);
+  dot0.onclick = () => goTo(0);
+  dot1.onclick = () => goTo(1);
+  let dotTick = false;
+  track.addEventListener('scroll', () => {
+    if (dotTick) return; dotTick = true;
+    requestAnimationFrame(() => {
+      const i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+      dot0.classList.toggle('on', i === 0);
+      dot1.classList.toggle('on', i === 1);
+      dotTick = false;
     });
-    playersCol.appendChild(playersList);
+  }, { passive: true });
 
-    // Context column
-    const contextCol = document.createElement('div');
-    const contextTitle = document.createElement('div'); contextTitle.className='bio-section-title'; contextTitle.textContent='Historical Setting';
-    const contextText = document.createElement('div'); contextText.className='bio-context-text'; contextText.textContent=bio.context;
-    const pivotText = document.createElement('div'); pivotText.className='bio-pivot'; pivotText.textContent=bio.pivot;
-    contextCol.appendChild(contextTitle);
-    contextCol.appendChild(contextText);
-    contextCol.appendChild(pivotText);
-
-    bioBlock.appendChild(playersCol);
-    bioBlock.appendChild(contextCol);
-    wall.appendChild(bioBlock);
-
-    // Why this game matters — full width below
-    if (bio.why) {
-      const whyTitle = document.createElement('div'); whyTitle.className='bio-why-title'; whyTitle.textContent='Why This Game';
-      const whyText = document.createElement('div'); whyText.className='bio-why'; whyText.textContent=bio.why;
-      wall.appendChild(whyTitle);
-      wall.appendChild(whyText);
-    }
-  }
-
-  card.appendChild(wall);
+  card.appendChild(carousel);
   gallery.appendChild(card);
 
   // Initial draw
