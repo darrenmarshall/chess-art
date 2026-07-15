@@ -351,8 +351,20 @@ body { background:var(--bg); color:var(--text-primary); font-family:var(--font-s
   font-variation-settings: "SOFT" 0, "WONK" 1;
 }
 .game-sub { font-size: 10.5px; color: var(--text-secondary); font-family: var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase; }
-.panels { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(16px, 2vw, 28px); justify-items:center; }
-.panel-wrap { display:flex; flex-direction:column; width:100%; max-width:min(100%, calc(100svh - 290px)); }
+/* Triptych is left-aligned with the game-head (eyebrow / title / meta).
+   Cap the whole grid — not each cell — so boards never float inward
+   under justify-items:center and leave the title hanging left. */
+.panels {
+  --panel-max: calc(100svh - 290px);
+  --panel-gap: clamp(16px, 2vw, 28px);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--panel-gap);
+  width: 100%;
+  max-width: min(100%, calc(3 * var(--panel-max) + 2 * var(--panel-gap)));
+  justify-items: stretch;
+}
+.panel-wrap { display:flex; flex-direction:column; width:100%; max-width:none; }
 .panel-label-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
 .panel-name { font-size:9.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-secondary); font-family:var(--font-mono); }
 .panel-role { font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted); font-family:var(--font-mono); }
@@ -477,8 +489,8 @@ canvas.board { width:100%; aspect-ratio:1; display:block; border:0.5px solid var
 }
 
 @media (max-width: 900px) {
-  .panels { grid-template-columns: 1fr; }
-  .panel-wrap { max-width: min(100%, 72svh); }
+  .panels { grid-template-columns: 1fr; max-width: min(100%, 72svh); }
+  .panel-wrap { max-width: none; }
   .game-era { display: none; }
   .detail-inner { grid-template-columns: 1fr; gap: clamp(24px, 5vh, 40px); }
   /* On touch / narrow screens, drop the horizontal pager: stack board then details */
