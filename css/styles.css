@@ -162,8 +162,32 @@ body { background:var(--bg); color:var(--text-primary); font-family:var(--font-s
 .topbar a { color: inherit; text-decoration: none; transition: color 0.15s; }
 .topbar a:hover { color: var(--text-primary); }
 .topbar .tb-brand { color: var(--text-primary); font-weight: 400; white-space: nowrap; }
-.topbar-nav { display: flex; gap: 14px; letter-spacing: 0.1em; }
-@media (max-width: 900px) { .topbar-nav { display: none; } }
+
+/* ── Works rail: left-hand work numbers, echoing the index table ── */
+.works-rail {
+  position: fixed; left: 0; top: 0; bottom: 0; z-index: 550;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: clamp(66px, 11vh, 116px) 0 clamp(40px, 7vh, 76px) clamp(28px, 5vw, 72px);
+  transform: translateX(-10px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.5s cubic-bezier(0.19,1,0.22,1), transform 0.5s cubic-bezier(0.19,1,0.22,1);
+}
+.works-rail.on { opacity: 1; pointer-events: auto; transform: translateX(0); }
+.wr-num {
+  position: relative; font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.08em; color: var(--red); text-decoration: none;
+  opacity: 0.32; transition: opacity 0.2s ease;
+}
+.wr-num:hover { opacity: 0.7; }
+.wr-num.active { opacity: 1; }
+.wr-num::before {
+  content: ''; position: absolute; left: -14px; top: 50%;
+  width: 8px; height: 1px; background: var(--red);
+  transform: scaleX(0); transform-origin: left center; opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.19,1,0.22,1), opacity 0.3s ease;
+}
+.wr-num.active::before { transform: scaleX(1); opacity: 1; }
+@media (max-width: 900px) { .works-rail { display: none; } }
 
 /* ── Statement ──────────────────────────────────────── */
 .statement.slide {
@@ -290,6 +314,14 @@ body { background:var(--bg); color:var(--text-primary); font-family:var(--font-s
 .pane-board {
   display: flex; flex-direction: column; justify-content: center; gap: clamp(14px, 2.6vh, 30px);
   padding: clamp(8px, 1.4vh, 20px) var(--pad) clamp(18px, 2.6vh, 34px);
+}
+/* Seat the game in its own column to the right of the rail: a clear left gutter
+   past the rail, balanced by a smaller right margin so the triptych reads centred
+   within the space that remains. */
+.works-slide.rail-space .pane-board,
+.works-slide.rail-space .pane-detail {
+  padding-left: clamp(104px, 9.5vw, 168px);
+  padding-right: clamp(28px, 4vw, 60px);
 }
 .board-stage { display: flex; flex-direction: column; justify-content: center; }
 .board-foot { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
@@ -446,6 +478,8 @@ canvas.board { width:100%; aspect-ratio:1; display:block; border:0.5px solid var
   .game-pager { display: block; overflow: visible; scroll-snap-type: none; }
   .game-pane { height: auto; overflow: visible; }
   .pane-board { min-height: calc(100svh - 120px); }
+  .works-slide.rail-space .pane-board,
+  .works-slide.rail-space .pane-detail { padding-left: var(--pad); padding-right: var(--pad); }
   .detail-open-btn, .detail-back-btn { display: none; }
   .pane-detail { border-top: 0.5px solid var(--border); }
   .game-pager.at-detail .detail-overview,
@@ -470,6 +504,61 @@ canvas.board { width:100%; aspect-ratio:1; display:block; border:0.5px solid var
 .pgn-text { font-size:11px; font-family:var(--font-mono); font-weight:300; color:var(--text-secondary); line-height:1.9; letter-spacing:0.03em; }
 .bio-context-text { font-size:13px; color:var(--text-secondary); line-height:1.75; }
 .bio-pivot { font-size:13px; color:var(--text-secondary); line-height:1.75; margin-top:14px; padding-top:14px; border-top:0.5px solid var(--border); font-style:italic; }
+
+/* ── The poem (Work 01, Scachs d'amor) ─────────────────── */
+.detail-card-head { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:16px; }
+.detail-card-head .detail-card-title { margin-bottom:0; padding-top:5px; }
+.poem-toggle {
+  font-family:var(--font-mono); font-size:9px; letter-spacing:0.16em; text-transform:uppercase;
+  color:var(--text-secondary); background:transparent;
+  border:0.5px solid var(--border-strong); border-radius:20px; padding:6px 14px; cursor:pointer;
+  display:inline-flex; align-items:center; gap:8px; white-space:nowrap; flex:0 0 auto;
+  transition:background 0.18s, color 0.18s, border-color 0.18s;
+}
+.poem-toggle:hover { color:var(--text-primary); border-color:var(--text-primary); }
+.poem-toggle .pt-arr { font-size:11px; line-height:1; }
+.notation-card.poem-open .poem-toggle { background:var(--text-primary); color:var(--bg); border-color:var(--text-primary); }
+
+.poem-panel {
+  margin-top:18px; padding-top:18px; border-top:0.5px solid var(--border);
+  max-height:min(64vh, 640px); overflow-y:auto; overscroll-behavior:contain;
+  --poem-green:#4f8a67;
+}
+.poem-panel::-webkit-scrollbar { width:6px; }
+.poem-panel::-webkit-scrollbar-thumb { background:var(--border-strong); border-radius:3px; }
+.poem-panel { scrollbar-width:thin; }
+
+.poem-header { margin-bottom:8px; }
+.poem-title { font-family:var(--font-serif); font-style:italic; font-weight:420; font-size:23px; letter-spacing:-0.015em; color:var(--text-primary); font-variation-settings:"SOFT" 0,"WONK" 1; }
+.poem-title-alt { font-style:normal; font-weight:400; font-size:11px; letter-spacing:0.06em; color:var(--text-muted); margin-left:4px; }
+.poem-authors { font-size:11.5px; color:var(--text-secondary); margin-top:9px; line-height:1.5; }
+.poem-place { font-family:var(--font-mono); font-size:9px; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-muted); margin-top:5px; }
+
+.poem-h { font-family:var(--font-mono); font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:var(--text-muted); margin:28px 0 15px; }
+.poem-roman { color:var(--red); margin-right:4px; }
+.poem-para { font-size:12.5px; line-height:1.72; color:var(--text-secondary); margin-bottom:12px; }
+
+.poem-divider { text-align:center; position:relative; margin:32px 0 22px; font-family:var(--font-mono); font-size:9px; letter-spacing:0.3em; text-transform:uppercase; color:var(--text-muted); }
+.poem-divider::before { content:''; position:absolute; left:0; right:0; top:50%; height:0.5px; background:var(--border); }
+.poem-divider span { position:relative; z-index:1; background:var(--bg); padding:0 14px; }
+
+.poem-move { display:flex; align-items:baseline; gap:12px; margin:26px 0 14px; }
+.poem-move-no { font-family:var(--font-mono); font-size:10px; color:var(--text-muted); min-width:1.7em; text-align:right; }
+.poem-move-not { font-family:var(--font-mono); font-size:12px; font-weight:500; letter-spacing:0.06em; color:var(--text-primary); }
+
+.poem-st { padding-left:15px; border-left:2px solid var(--border); margin-bottom:16px; }
+.poem-st-label { font-family:var(--font-mono); font-size:8.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; line-height:1.45; }
+.poem-lines { font-family:var(--font-serif); font-weight:350; font-size:14.5px; line-height:1.6; color:var(--text-secondary); font-variation-settings:"SOFT" 0,"WONK" 0; }
+
+.poem-st-white { border-left-color:color-mix(in srgb, var(--red) 65%, transparent); }
+.poem-st-black { border-left-color:var(--poem-green); }
+.poem-st-rule { border-left-color:var(--border-strong); }
+.poem-st-rule .poem-lines { font-style:italic; font-size:13.5px; color:var(--text-muted); }
+.poem-st-mate { border-left-color:var(--red); }
+.poem-st-mars .poem-voice { color:var(--red); }
+.poem-st-venus .poem-voice { color:var(--poem-green); }
+
+.poem-coda { font-size:12px; line-height:1.66; color:var(--text-muted); font-style:italic; margin-top:24px; padding-top:16px; border-top:0.5px solid var(--border); }
 
 /* ── Colophon ───────────────────────────────────────── */
 .colophon { border-top:0.5px solid var(--border-strong); max-width:1200px; margin:0 auto; padding: clamp(60px,10vh,110px) 32px 30px; }
@@ -506,6 +595,20 @@ canvas.board { width:100%; aspect-ratio:1; display:block; border:0.5px solid var
 /* The board eases up with a whisper of scale */
 [data-reveal="scale"] { transform: translateY(26px) scale(0.975); transform-origin: center; }
 [data-reveal="scale"].in { transform: none; }
+
+/* Word-by-word headline: the container stays put, each word rises + sharpens */
+[data-reveal="words"] { opacity: 1; transform: none; filter: none; transition: none; }
+.rv-word {
+  display: inline-block;
+  opacity: 0; transform: translateY(0.44em); filter: blur(4px);
+  transition:
+    opacity 0.72s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.72s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.72s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--rv-delay, 0s);
+  will-change: opacity, transform;
+}
+.rv-word.in { opacity: 1; transform: none; filter: none; }
 
 /* Index rows keep their hover transition alongside the reveal */
 .index-row[data-reveal] {

@@ -1,6 +1,7 @@
 import { games, bios } from './data.js';
-import { renderPanel } from './board.js';
+import { renderPanel, registerPulse } from './board.js';
 import { openOverlay } from './watch.js';
+import { POEM_HTML } from './poem.js';
 
 const gallery = document.getElementById('gallery');
 const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -122,6 +123,8 @@ games.forEach(game => {
     `<p class="detail-desc">${game.desc}</p>` +
     (bio && bio.why ? `<p class="detail-why">${bio.why}</p>` : '');
 
+  const hasPoem = game.index === '01';
+
   const cards = document.createElement('div'); cards.className = 'detail-cards';
   cards.innerHTML =
     `<div class="detail-card" style="--d:.06s">` +
@@ -134,9 +137,13 @@ games.forEach(game => {
       `</div>` +
       `<div class="mat-note">${game.note}</div>` +
     `</div>` +
-    `<div class="detail-card" style="--d:.12s">` +
-      `<div class="detail-card-title">Game Notation</div>` +
+    `<div class="detail-card notation-card${hasPoem ? ' has-poem' : ''}" style="--d:.12s">` +
+      `<div class="detail-card-head">` +
+        `<div class="detail-card-title">Game Notation</div>` +
+        (hasPoem ? `<button type="button" class="poem-toggle" aria-expanded="false">Read the poem <span class="pt-arr" aria-hidden="true">&darr;</span></button>` : '') +
+      `</div>` +
       `<div class="pgn-text">${game.pgn}</div>` +
+      (hasPoem ? `<div class="poem-panel" hidden>${POEM_HTML}</div>` : '') +
     `</div>` +
     (bio ?
       `<div class="detail-card" style="--d:.18s">` +
@@ -148,6 +155,22 @@ games.forEach(game => {
   dInner.appendChild(overview); dInner.appendChild(cards);
   paneDetail.appendChild(dInner);
 
+  // Poem toggle — expands the notation card into a scrollable reading panel
+  if (hasPoem) {
+    const card = cards.querySelector('.notation-card');
+    const btn = card.querySelector('.poem-toggle');
+    const panel = card.querySelector('.poem-panel');
+    btn.addEventListener('click', () => {
+      const open = card.classList.toggle('poem-open');
+      btn.setAttribute('aria-expanded', String(open));
+      panel.hidden = !open;
+      btn.innerHTML = open
+        ? 'Hide the poem <span class="pt-arr" aria-hidden="true">&uarr;</span>'
+        : 'Read the poem <span class="pt-arr" aria-hidden="true">&darr;</span>';
+      if (open) panel.scrollTop = 0;
+    });
+  }
+
   pager.appendChild(paneBoard); pager.appendChild(paneDetail);
   section.appendChild(pager);
   gallery.appendChild(section);
@@ -155,6 +178,13 @@ games.forEach(game => {
   // Initial draw
   canvasDefs.forEach(({ canvas, cfgType, flipped, baseShowW, baseShowB }) => {
     renderPanel(canvas, cfgType, game.moves, flipped, baseShowW, baseShowB);
+  });
+
+  // Keep the lines gently breathing while a board is on screen
+  canvasDefs.forEach(({ canvas, cfgType, flipped, baseShowW, baseShowB }) => {
+    registerPulse(canvas, () => {
+      renderPanel(canvas, cfgType, game.moves, flipped, baseShowW && state.w, baseShowB && state.b);
+    });
   });
 });
 

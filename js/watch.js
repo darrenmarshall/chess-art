@@ -1,5 +1,5 @@
 import { CONFIGS, RED } from './data.js';
-import { sq, drawBoard, renderPanel } from './board.js';
+import { sq, drawBoard, renderPanel, getPulse, registerPulse } from './board.js';
 
 // ── Watch mode engine ─────────────────────────────────
 
@@ -66,6 +66,7 @@ export function drawStepOnCanvas(canvas, cfgType, game, movesFilter, flipped, st
   const S = canvas.width, cfg = CONFIGS[cfgType], ctx = canvas.getContext('2d');
   const { M, CELL } = drawBoard(ctx, S, cfg);
   const sliced = allMoves.slice(0, step);
+  const pulse = getPulse();
 
   const wm = movesFilter === 'full' ? sliced.filter(m=>m[2]) : (movesFilter === 'white' ? sliced : []);
   const bm = movesFilter === 'full' ? sliced.filter(m=>!m[2]) : (movesFilter === 'black' ? sliced : []);
@@ -76,8 +77,8 @@ export function drawStepOnCanvas(canvas, cfgType, game, movesFilter, flipped, st
       if (!to) return;
       const a = sq(from, M, CELL, flipped), b = sq(to, M, CELL, flipped);
       const isLast = i === ms.length - 1;
-      // All past moves: solid and fully visible. Most recent: bolder.
-      const op  = isLast ? 0.90 : 0.72;
+      // All past moves: solid and fully visible. Most recent: bolder. Both breathe with the shared pulse.
+      const op  = (isLast ? 0.90 : 0.72) * pulse;
       const lw  = isLast ? S / 320 : S / 580;
       ctx.save();
       ctx.globalAlpha = op;
@@ -290,7 +291,10 @@ export function openOverlay(game, panelDef) {
   });
 
   document.body.appendChild(overlay);
-  overlayState = { ws, stopTimer };
+  const unregisterPulse = registerPulse(cv, () => {
+    drawStepOnCanvas(cv, panelDef.cfgType, game, panelDef.movesFilter, panelDef.flipped, ws.step);
+  });
+  overlayState = { ws, stopTimer, unregisterPulse };
 
   // Keyboard
   function onKey(e) {
@@ -313,7 +317,7 @@ function closeOverlay() {
     if (overlay._onKey) document.removeEventListener('keydown', overlay._onKey);
     overlay.remove();
   }
-  if (overlayState) { overlayState.stopTimer(); overlayState = null; }
+  if (overlayState) { overlayState.stopTimer(); overlayState.unregisterPulse(); overlayState = null; }
   overlayActive = false;
   document.body.style.overflow = '';
 }
