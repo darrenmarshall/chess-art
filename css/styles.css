@@ -32,7 +32,6 @@ body { background:var(--bg); color:var(--text-primary); font-family:var(--font-s
 }
 .slide::-webkit-scrollbar { display: none; }
 .slide-center { display: flex; flex-direction: column; justify-content: safe center; }
-#gallery { display: contents; }
 .splash.slide { height: 100vh; height: 100svh; }
 /* Narrative slides fill the viewport; their content is centered up to 1200px */
 .statement.slide, .index.slide, .colophon.slide {
@@ -169,55 +168,56 @@ body { background:var(--bg); color:var(--text-primary); font-family:var(--font-s
 /* ── Statement ──────────────────────────────────────── */
 .statement.slide {
   max-width:none; width:100vw; margin:0;
-  padding: clamp(48px,8vh,110px) clamp(28px,5vw,72px);
+  padding: clamp(40px,5vh,80px) clamp(32px,4.5vw,96px);
 }
 .statement { max-width:none; margin:0; }
 .statement-inner {
   display: flex; align-items: center; justify-content: space-between;
-  gap: clamp(40px, 5vw, 110px); width: 100%; height: 100%;
+  gap: clamp(40px, 4vw, 104px); width: 100%; height: 100%;
 }
 .statement-body {
-  flex: 1 1 auto; min-width: 0; max-width: 760px;
+  flex: 1 1 auto; min-width: 0; max-width: 800px;
   display: flex; flex-direction: column; justify-content: center;
 }
 .statement-art {
-  flex: 0 1 47%; margin: 0; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 20px; min-width: 0;
+  flex: 0 0 auto; margin: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: clamp(16px, 2vh, 26px); min-width: 0;
+  width: min(48vw, 90vh, 860px);
 }
 .statement-art canvas {
-  width: 100%; max-width: min(84vh, 680px); height: auto; aspect-ratio: 1 / 1; display: block;
+  width: 100%; height: auto; aspect-ratio: 1 / 1; display: block;
 }
 .statement-art-cap {
-  font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.18em;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em;
   text-transform: uppercase; color: var(--text-muted); text-align: center;
 }
 @media (max-width: 860px) {
   .statement.slide { padding: clamp(40px,6vh,72px) clamp(24px,6vw,48px); }
   .statement-inner { flex-direction: column; align-items: stretch; justify-content: center; gap: clamp(28px, 5vh, 52px); }
   .statement-body { max-width: none; }
-  .statement-art canvas { height: auto; width: 100%; max-width: 380px; align-self: center; }
+  .statement-art canvas { height: auto; width: 100%; max-width: 420px; align-self: center; }
 }
 .statement-kicker {
-  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.24em;
-  text-transform: uppercase; color: var(--text-muted); margin-bottom: 34px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.24em;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: clamp(28px, 4vh, 42px);
 }
 .statement-lead {
   font-family: var(--font-serif); font-weight: 300;
-  font-size: clamp(27px, 3.6vw, 50px); line-height: 1.22; letter-spacing: -0.015em;
-  max-width: 21em; color: var(--text-primary);
+  font-size: clamp(30px, 4.6vw, 66px); line-height: 1.16; letter-spacing: -0.018em;
+  max-width: 19em; color: var(--text-primary);
   font-variation-settings: "SOFT" 0, "WONK" 0;
 }
 .statement-lead em { font-style: italic; font-weight: 340; }
 .statement-cols {
-  margin-top: clamp(44px, 7vh, 80px); display: grid;
-  grid-template-columns: 1fr 1fr; gap: 32px 64px; max-width: 880px;
+  margin-top: clamp(40px, 6.5vh, 76px); display: grid;
+  grid-template-columns: 1fr 1fr; gap: 36px 72px; max-width: 1000px;
 }
 @media (max-width: 700px) { .statement-cols { grid-template-columns: 1fr; } }
-.statement-cols p { font-size: 14.5px; line-height: 1.75; color: var(--text-secondary); font-weight: 380; }
+.statement-cols p { font-size: 16.5px; line-height: 1.78; color: var(--text-secondary); font-weight: 380; }
 .statement-cols p + p { margin-top: 1em; }
 .statement-cols .col-label {
-  font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.2em;
-  text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px;
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: 14px;
 }
 
 /* ── Index ──────────────────────────────────────────── */
@@ -250,15 +250,50 @@ body { background:var(--bg); color:var(--text-primary); font-family:var(--font-s
 }
 
 /* ── Works ──────────────────────────────────────────── */
-.game-card { border-top: 0.5px solid var(--border-strong); scroll-margin-top: 0; }
-.colophon { scroll-margin-top: 52px; }
-.plate {
-  min-height: 100vh; min-height: 100svh;
-  display: flex; flex-direction: column; justify-content: center;
-  padding: 72px var(--pad) 36px; gap: clamp(20px, 3.5vh, 36px);
+/* The ten works are a vertical stack inside one horizontal deck slide.
+   Each work pins its header, then pages horizontally: boards, then details. */
+.works-slide { scroll-snap-type: y mandatory; overflow-y: auto; overflow-x: hidden; }
+.game-section {
+  height: 100vh; height: 100svh; width: 100%;
+  scroll-snap-align: start; scroll-snap-stop: always;
+  display: flex; flex-direction: column; overflow: hidden; position: relative;
+  border-top: 0.5px solid var(--border-strong);
+  padding-top: 60px;
 }
-.wall { max-width: 1200px; margin: 0 auto; width: 100%; padding: clamp(30px, 6vh, 70px) 32px clamp(70px, 11vh, 120px); }
-.card-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+
+/* Pinned header — stays put while the detail pane slides in */
+.game-head {
+  flex: 0 0 auto; position: relative; z-index: 4;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+  padding: clamp(14px, 2.4vh, 30px) var(--pad) clamp(10px, 1.6vh, 20px);
+}
+.game-head-main { min-width: 0; }
+
+/* Horizontal pager holding the two panes */
+.game-pager {
+  flex: 1 1 auto; min-height: 0; display: flex;
+  overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x mandatory; scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none; -ms-overflow-style: none;
+}
+.game-pager::-webkit-scrollbar { display: none; }
+@media (prefers-reduced-motion: reduce) { .game-pager { scroll-behavior: auto; } }
+.game-pane {
+  flex: 0 0 100%; width: 100%; height: 100%;
+  scroll-snap-align: start; scroll-snap-stop: always;
+  overflow-y: auto; overflow-x: hidden;
+  scrollbar-width: none; -ms-overflow-style: none;
+}
+.game-pane::-webkit-scrollbar { display: none; }
+
+.pane-board {
+  display: flex; flex-direction: column; justify-content: center; gap: clamp(14px, 2.6vh, 30px);
+  padding: clamp(8px, 1.4vh, 20px) var(--pad) clamp(18px, 2.6vh, 34px);
+}
+.board-stage { display: flex; flex-direction: column; justify-content: center; }
+.board-foot { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+
 .game-index {
   font-size: 10px; letter-spacing: 0.24em; color: var(--red);
   text-transform: uppercase; font-family: var(--font-mono); margin-bottom: 14px;
@@ -339,13 +374,82 @@ canvas.board { width:100%; aspect-ratio:1; display:block; border:0.5px solid var
 .tog { font-size:9.5px; letter-spacing:0.1em; padding:4px 13px; border-radius:20px; border:0.5px solid var(--border-strong); background:transparent; cursor:pointer; color:var(--text-secondary); text-transform:uppercase; font-family:var(--font-mono); transition:opacity 0.12s, color 0.12s; white-space:nowrap; }
 .tog:hover { color:var(--text-primary); }
 .tog.off { opacity:0.25; }
-.card-body { display:grid; grid-template-columns:1fr 1fr; gap:28px 64px; margin-bottom:28px; }
-@media (max-width:900px) {
-  .card-body{grid-template-columns:1fr}
-  .panels{grid-template-columns:1fr}
-  .plate{ min-height:auto; padding-top:64px; }
-  .panel-wrap{ max-width:min(100%, 72svh); }
-  .game-era{ display:none; }
+/* Affordance to page over to the details */
+.detail-open-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--text-primary); background: transparent;
+  border: 0.5px solid var(--border-strong); border-radius: 40px; padding: 11px 22px; cursor: pointer;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+.detail-open-btn:hover { background: var(--text-primary); color: var(--bg); border-color: var(--text-primary); }
+.detail-open-btn .arr { display: inline-block; transition: transform 0.18s; }
+.detail-open-btn:hover .arr { transform: translateX(4px); }
+
+/* ── Detail pane: large overview left, detail cards right ── */
+.pane-detail { padding: clamp(8px, 1.4vh, 20px) var(--pad) clamp(30px, 5vh, 64px); }
+.detail-back-btn {
+  display: inline-flex; align-items: center; gap: 9px; margin-bottom: clamp(20px, 3.4vh, 40px);
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--text-muted); background: none; border: none; cursor: pointer; padding: 4px 0;
+  transition: color 0.15s;
+}
+.detail-back-btn:hover { color: var(--text-primary); }
+.detail-back-btn .arr { display: inline-block; transition: transform 0.18s; }
+.detail-back-btn:hover .arr { transform: translateX(-4px); }
+.detail-inner {
+  display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(32px, 5vw, 96px);
+  align-items: start; max-width: 1400px; margin: 0 auto;
+}
+.detail-overview { align-self: start; }
+.detail-kicker {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--red); margin-bottom: clamp(20px, 3vh, 34px);
+}
+.detail-desc {
+  font-family: var(--font-serif); font-weight: 320;
+  font-size: clamp(23px, 2.5vw, 40px); line-height: 1.28; letter-spacing: -0.015em;
+  color: var(--text-primary); font-variation-settings: "SOFT" 0, "WONK" 0;
+}
+.detail-why {
+  font-size: clamp(14px, 1.15vw, 16.5px); line-height: 1.75; color: var(--text-secondary);
+  margin-top: clamp(20px, 3vh, 32px); max-width: 40em;
+}
+.detail-cards { display: flex; flex-direction: column; gap: clamp(16px, 2vw, 24px); }
+.detail-card { border: 0.5px solid var(--border); border-radius: 3px; padding: clamp(18px, 1.6vw, 26px); }
+.detail-card-title {
+  font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: 16px;
+}
+
+/* Detail content eases in from the right when the pane is opened */
+.game-pager.at-detail .detail-overview,
+.game-pager.at-detail .detail-card {
+  animation: detail-rise 0.72s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--d, 0s);
+}
+@keyframes detail-rise { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .game-pager.at-detail .detail-overview,
+  .game-pager.at-detail .detail-card { animation: none; }
+}
+
+@media (max-width: 900px) {
+  .panels { grid-template-columns: 1fr; }
+  .panel-wrap { max-width: min(100%, 72svh); }
+  .game-era { display: none; }
+  .detail-inner { grid-template-columns: 1fr; gap: clamp(24px, 5vh, 40px); }
+  /* On touch / narrow screens, drop the horizontal pager: stack board then details */
+  .works-slide { scroll-snap-type: none; overflow-y: auto; }
+  .game-section { height: auto; min-height: 100svh; overflow: visible; }
+  .game-pager { display: block; overflow: visible; scroll-snap-type: none; }
+  .game-pane { height: auto; overflow: visible; }
+  .pane-board { min-height: calc(100svh - 120px); }
+  .detail-open-btn, .detail-back-btn { display: none; }
+  .pane-detail { border-top: 0.5px solid var(--border); }
+  .game-pager.at-detail .detail-overview,
+  .game-pager.at-detail .detail-card { animation: none; }
 }
 /* Touch / no-hover: surface the bio and play beneath the board */
 @media (hover: none), (max-width: 900px) {
@@ -358,25 +462,14 @@ canvas.board { width:100%; aspect-ratio:1; display:block; border:0.5px solid var
   .panel-bio-name, .panel-bio-text, .play-btn { opacity: 1; transform: none; transition: background 0.18s, color 0.18s, border-color 0.18s; }
   .panel-bio-text { overflow: visible; }
 }
-.game-desc { font-size:16.5px; color:var(--text-primary); line-height:1.65; font-weight:340; letter-spacing:-0.005em; }
-.mat-block-title { font-size:9.5px; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:14px; }
+/* Shared detail-card content atoms */
 .mat-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px 20px; margin-bottom:14px; }
 .mat-label { font-size:9px; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:3px; }
 .mat-value { font-size:12.5px; color:var(--text-secondary); line-height:1.5; }
 .mat-note { font-size:12.5px; color:var(--text-muted); line-height:1.65; font-style:italic; }
-.pgn-block { margin-top:26px; padding-top:24px; border-top:0.5px solid var(--border); }
-.pgn-title { font-size:9.5px; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:12px; }
 .pgn-text { font-size:11px; font-family:var(--font-mono); font-weight:300; color:var(--text-secondary); line-height:1.9; letter-spacing:0.03em; }
-.bio-block { margin-top:26px; padding-top:24px; border-top:0.5px solid var(--border); display:grid; grid-template-columns:1fr 1fr; gap:24px 64px; }
-@media (max-width:700px) { .bio-block { grid-template-columns:1fr; } }
-.bio-section-title { font-size:9.5px; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:12px; }
-.bio-players { display:flex; flex-direction:column; gap:18px; }
-.bio-player-name { font-size:13.5px; font-weight:500; color:var(--text-primary); margin-bottom:4px; font-style:italic; }
-.bio-player-text { font-size:13px; color:var(--text-secondary); line-height:1.75; }
 .bio-context-text { font-size:13px; color:var(--text-secondary); line-height:1.75; }
 .bio-pivot { font-size:13px; color:var(--text-secondary); line-height:1.75; margin-top:14px; padding-top:14px; border-top:0.5px solid var(--border); font-style:italic; }
-.bio-why { font-size:13px; color:var(--text-secondary); line-height:1.75; margin-top:8px; max-width:880px; }
-.bio-why-title { font-size:9.5px; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-muted); font-family:var(--font-mono); margin-top:26px; margin-bottom:8px; }
 
 /* ── Colophon ───────────────────────────────────────── */
 .colophon { border-top:0.5px solid var(--border-strong); max-width:1200px; margin:0 auto; padding: clamp(60px,10vh,110px) 32px 30px; }
