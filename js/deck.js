@@ -1,5 +1,6 @@
 import { games, isDark } from './data.js';
 import { getPulse } from './board.js';
+import { resetStatementLoop, stopStatementLoop } from './statement.js';
 
 // ── Exhibition shell ──────────────────────────────────
 
@@ -32,6 +33,15 @@ const progressEl = document.getElementById('deck-progress');
 const pad2 = n => String(n).padStart(2, '0');
 const panels = () => Array.from(document.querySelectorAll('.slide'));
 let deckIndex = 0;
+let onStatementPrev = false;
+
+const onStatement = () => {
+  const el = document.querySelector('.statement.slide');
+  if (!el) return false;
+  const r = el.getBoundingClientRect();
+  const c = window.innerWidth / 2;
+  return r.left <= c && r.right > c;
+};
 
 function updateDeckUI() {
   const total = panels().length;
@@ -42,6 +52,11 @@ function updateDeckUI() {
   if (deckControls) deckControls.classList.add('on');
   topbar.classList.toggle('on', deckIndex > 0);
   updateRail();
+
+  const onStmt = onStatement();
+  if (onStmt && !onStatementPrev) resetStatementLoop();
+  else if (!onStmt && onStatementPrev) stopStatementLoop();
+  onStatementPrev = onStmt;
 }
 
 // Show the left rail only within the works, and mark the current game
