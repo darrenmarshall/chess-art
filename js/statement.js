@@ -2,10 +2,10 @@ import { games } from './data.js';
 import { drawStepOnCanvas } from './watch.js';
 
 // Auto-playing board on the exhibition statement: the Shirov (Black) score
-// from game 10, drawn move by move on an endless loop — no controls.
+// from the Polgár game, drawn move by move on an endless loop — no controls.
 const canvas = document.getElementById('statement-board');
 if (canvas) {
-  const game = games.find(g => g.index === '10') || games[games.length - 1];
+  const game = games.find(g => g.index === '11') || games[games.length - 1];
   const cfgType = 'black', movesFilter = 'black', flipped = true;
   const total = game.moves.filter(m => m[2] === false).length;
 

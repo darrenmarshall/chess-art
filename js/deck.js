@@ -185,7 +185,7 @@ if (reducedMotion || !('IntersectionObserver' in window)) {
   revealRoots.forEach(el => ro.observe(el));
 }
 
-// Splash canvas: the ten games draw themselves, one after another
+// Splash canvas: the eleven games draw themselves, one after another
 (function () {
   const cv = document.getElementById('splash-canvas');
   if (!cv) return;

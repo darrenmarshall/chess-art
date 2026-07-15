@@ -31,7 +31,7 @@ games.forEach(game => {
   const eraMatch = game.note.match(/Era:\s*([^.]+)\./);
   head.innerHTML =
     `<div class="game-head-main">` +
-      `<div class="game-index">Work ${game.index} / 10</div>` +
+      `<div class="game-index">Work ${game.index} / 11</div>` +
       `<div class="game-title">${game.title}</div>` +
       `<div class="game-sub">${game.sub}</div>` +
     `</div>` +

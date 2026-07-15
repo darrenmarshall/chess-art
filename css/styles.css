@@ -250,7 +250,7 @@ body { background:var(--bg); color:var(--text-primary); font-family:var(--font-s
 }
 
 /* ── Works ──────────────────────────────────────────── */
-/* The ten works are a vertical stack inside one horizontal deck slide.
+/* The eleven works are a vertical stack inside one horizontal deck slide.
    Each work pins its header, then pages horizontally: boards, then details. */
 .works-slide { scroll-snap-type: y mandatory; overflow-y: auto; overflow-x: hidden; }
 .game-section {
