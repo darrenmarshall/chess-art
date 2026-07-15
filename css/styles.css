@@ -317,11 +317,20 @@ body { background:var(--bg); color:var(--text-primary); font-family:var(--font-s
 }
 /* Seat the game in its own column to the right of the rail: a clear left gutter
    past the rail, balanced by a smaller right margin so the triptych reads centred
-   within the space that remains. */
+   within the space that remains. The header (eyebrow, title, meta) shares the
+   same insets so it lines up with the boards below it. */
+.works-slide.rail-space {
+  --game-pad-left: clamp(104px, 9.5vw, 168px);
+  --game-pad-right: clamp(28px, 4vw, 60px);
+}
 .works-slide.rail-space .pane-board,
 .works-slide.rail-space .pane-detail {
-  padding-left: clamp(104px, 9.5vw, 168px);
-  padding-right: clamp(28px, 4vw, 60px);
+  padding-left: var(--game-pad-left);
+  padding-right: var(--game-pad-right);
+}
+.works-slide.rail-space .game-head {
+  padding-left: var(--game-pad-left);
+  padding-right: var(--game-pad-right);
 }
 .board-stage { display: flex; flex-direction: column; justify-content: center; }
 .board-foot { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
@@ -478,8 +487,7 @@ canvas.board { width:100%; aspect-ratio:1; display:block; border:0.5px solid var
   .game-pager { display: block; overflow: visible; scroll-snap-type: none; }
   .game-pane { height: auto; overflow: visible; }
   .pane-board { min-height: calc(100svh - 120px); }
-  .works-slide.rail-space .pane-board,
-  .works-slide.rail-space .pane-detail { padding-left: var(--pad); padding-right: var(--pad); }
+  .works-slide.rail-space { --game-pad-left: var(--pad); --game-pad-right: var(--pad); }
   .detail-open-btn, .detail-back-btn { display: none; }
   .pane-detail { border-top: 0.5px solid var(--border); }
   .game-pager.at-detail .detail-overview,
