@@ -7,6 +7,9 @@
   --font-serif: 'Fraunces', 'Iowan Old Style', Georgia, serif;
   --font-mono: 'Spline Sans Mono', 'SF Mono', 'Fira Mono', 'Courier New', monospace;
   --pad: clamp(20px, 4vw, 48px);
+  --work-num-x: clamp(38px, calc(5vw + 10px), 82px);
+  --game-pad-left: clamp(104px, 9.5vw, 168px);
+  --game-pad-right: clamp(28px, 4vw, 60px);
 }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#0f0e0c; --text-primary:#eae7de; --text-secondary:#a5a091; --text-muted:#6b675c; --border:rgba(234,231,222,0.09); --border-strong:rgba(234,231,222,0.22); }
@@ -163,30 +166,38 @@ body { background:var(--bg); color:var(--text-primary); font-family:var(--font-s
 .topbar a:hover { color: var(--text-primary); }
 .topbar .tb-brand { color: var(--text-primary); font-weight: 400; white-space: nowrap; }
 
-/* ── Works rail: left-hand work numbers, echoing the index table ── */
+/* ── Works rail: shared number column for index + works ── */
 .works-rail {
-  position: fixed; left: 0; top: 0; bottom: 0; z-index: 550;
-  display: flex; flex-direction: column; justify-content: space-between;
-  padding: clamp(66px, 11vh, 116px) 0 clamp(40px, 7vh, 76px) clamp(28px, 5vw, 72px);
-  transform: translateX(-10px);
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.5s cubic-bezier(0.19,1,0.22,1), transform 0.5s cubic-bezier(0.19,1,0.22,1);
+  position: fixed; inset: 0; z-index: 550;
+  pointer-events: none;
+  opacity: 0; transform: translateX(-10px);
+  transition:
+    opacity 0.35s cubic-bezier(0.19,1,0.22,1),
+    transform 0.5s cubic-bezier(0.19,1,0.22,1);
 }
-.works-rail.on { opacity: 1; pointer-events: auto; transform: translateX(0); }
+.works-rail.on {
+  opacity: 1; transform: translateX(0);
+  transition:
+    opacity 0.55s cubic-bezier(0.19,1,0.22,1) 0.14s,
+    transform 0.5s cubic-bezier(0.19,1,0.22,1) 0.14s;
+}
 .wr-num {
-  position: relative; font-family: var(--font-mono); font-size: 11px;
+  position: fixed; left: var(--work-num-x);
+  font-family: var(--font-mono); font-size: 11px;
   letter-spacing: 0.08em; color: var(--red); text-decoration: none;
-  opacity: 0.32; transition: opacity 0.2s ease;
+  opacity: 0.32; pointer-events: auto;
+  transform: translateY(-50%);
+  transition: opacity 0.2s ease;
 }
 .wr-num:hover { opacity: 0.7; }
 .wr-num.active { opacity: 1; }
 .wr-num::before {
   content: ''; position: absolute; left: -14px; top: 50%;
   width: 8px; height: 1px; background: var(--red);
-  transform: scaleX(0); transform-origin: left center; opacity: 0;
+  transform: translateY(-50%) scaleX(0); transform-origin: left center; opacity: 0;
   transition: transform 0.3s cubic-bezier(0.19,1,0.22,1), opacity 0.3s ease;
 }
-.wr-num.active::before { transform: scaleX(1); opacity: 1; }
+.wr-num.active::before { transform: translateY(-50%) scaleX(1); opacity: 1; }
 @media (max-width: 900px) { .works-rail { display: none; } }
 
 /* ── Statement ──────────────────────────────────────── */
@@ -247,19 +258,33 @@ body { background:var(--bg); color:var(--text-primary); font-family:var(--font-s
 /* ── Index ──────────────────────────────────────────── */
 .index.slide {
   max-width:none; width:100vw; margin:0;
-  padding: clamp(48px,8vh,96px) clamp(28px,5vw,72px);
+  padding: clamp(48px,8vh,96px) var(--game-pad-right) clamp(48px,8vh,96px) var(--game-pad-left);
   justify-content:center;
 }
 .index { max-width:none; margin:0; }
 .index-kicker { font-family:var(--font-mono); font-size:10px; letter-spacing:0.24em; text-transform:uppercase; color:var(--text-muted); margin-bottom:28px; }
 .index-list { border-top:0.5px solid var(--border-strong); }
 .index-row {
-  display:grid; grid-template-columns:52px 1fr auto auto; align-items:baseline; gap:24px;
-  padding:22px 10px; border-bottom:0.5px solid var(--border);
+  display:grid; grid-template-columns:1fr auto auto; align-items:baseline; gap:24px;
+  padding:22px 10px 22px 0; border-bottom:0.5px solid var(--border);
   text-decoration:none; color:inherit; transition:background 0.16s ease, padding-left 0.2s ease;
 }
-.index-row:hover { background:color-mix(in srgb, var(--text-primary) 4%, transparent); padding-left:18px; }
-.index-num { font-family:var(--font-mono); font-size:11px; letter-spacing:0.08em; color:var(--red); }
+.index-row:hover { background:color-mix(in srgb, var(--text-primary) 4%, transparent); }
+.index-num {
+  font-family:var(--font-mono); font-size:11px; letter-spacing:0.08em; color:var(--red);
+  display:none;
+}
+@media (min-width:901px) {
+  .index-row:hover { padding-left:0; }
+  .index-row:hover .index-main { transform:translateX(6px); }
+  .index-main { transition:transform 0.2s ease; }
+}
+@media (max-width:900px) {
+  .index.slide { padding-left:clamp(28px,5vw,72px); padding-right:clamp(28px,5vw,72px); }
+  .index-row { grid-template-columns:34px 1fr auto; gap:16px; padding:22px 10px; }
+  .index-row:hover { padding-left:18px; }
+  .index-num { display:block; }
+}
 .index-title {
   font-family:var(--font-serif); font-weight:340; font-size:clamp(19px,2.2vw,29px);
   line-height:1.08; letter-spacing:-0.02em; color:var(--text-primary); margin-bottom:6px;
@@ -269,7 +294,6 @@ body { background:var(--bg); color:var(--text-primary); font-family:var(--font-s
 .index-era { align-self:center; font-family:var(--font-mono); font-size:9.5px; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); white-space:nowrap; }
 .index-year { align-self:center; font-family:var(--font-mono); font-size:11px; letter-spacing:0.06em; color:var(--text-muted); white-space:nowrap; }
 @media (max-width:700px) {
-  .index-row { grid-template-columns:34px 1fr auto; gap:16px; }
   .index-era { display:none; }
 }
 
@@ -319,10 +343,6 @@ body { background:var(--bg); color:var(--text-primary); font-family:var(--font-s
    past the rail, balanced by a smaller right margin so the triptych reads centred
    within the space that remains. The header (eyebrow, title, meta) shares the
    same insets so it lines up with the boards below it. */
-.works-slide.rail-space {
-  --game-pad-left: clamp(104px, 9.5vw, 168px);
-  --game-pad-right: clamp(28px, 4vw, 60px);
-}
 .works-slide.rail-space .pane-board,
 .works-slide.rail-space .pane-detail {
   padding-left: var(--game-pad-left);

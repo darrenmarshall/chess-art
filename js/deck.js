@@ -8,10 +8,11 @@ const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-m
 
 const topbar = document.getElementById('topbar');
 
-// Left rail: the work numbers 01–11, echoing the index table's numbering so
-// stepping from the index into a game feels seamless. Only shown on the works.
+// Left rail: work numbers 01–11, shared between index and works so the
+// column stays fixed when scrolling horizontally from the index into a game.
 const worksRail = document.getElementById('works-rail');
 const railLinks = [];
+let indexHoverIndex = -1;
 if (worksRail) {
   games.forEach(g => {
     const a = document.createElement('a');
@@ -59,15 +60,72 @@ function updateDeckUI() {
   onStatementPrev = onStmt;
 }
 
-// Show the left rail only within the works, and mark the current game
-function updateRail() {
-  if (!worksRail) return;
-  const active = onWorks();
-  worksRail.classList.toggle('on', active);
-  if (active && railLinks.length) {
+const onIndex = () => {
+  const el = document.querySelector('.index.slide');
+  if (!el) return false;
+  const r = el.getBoundingClientRect();
+  const c = window.innerWidth / 2;
+  return r.left <= c && r.right > c;
+};
+
+// How close (in vw) the deck must be to a snap point before the rail shows.
+const RAIL_SNAP = 0.06;
+
+// Index and works share the number column, but the rail dips out while the
+// deck scrolls horizontally between those two slides.
+function railContext() {
+  const vw = window.innerWidth;
+  if (vw <= 900 || !deck) return 'hidden';
+  const indexSlide = document.querySelector('.index.slide');
+  const gallery = document.getElementById('gallery');
+  if (!indexSlide || !gallery) return 'hidden';
+
+  const slides = panels();
+  const iIdx = slides.indexOf(indexSlide);
+  const wIdx = slides.indexOf(gallery);
+  if (iIdx < 0 || wIdx < 0) return 'hidden';
+
+  const scroll = deck.scrollLeft;
+  const t = vw * RAIL_SNAP;
+  const iAnchor = iIdx * vw;
+  const wAnchor = wIdx * vw;
+
+  if (Math.abs(scroll - iAnchor) <= t) return 'index';
+  if (Math.abs(scroll - wAnchor) <= t) return 'works';
+  if (scroll > iAnchor + t && scroll < wAnchor - t) return 'between';
+  return 'hidden';
+}
+
+// Pin each rail number to the vertical center of its index row.
+function syncWorkNumPositions() {
+  if (!railLinks.length || window.innerWidth <= 900) return;
+  const rows = document.querySelectorAll('.index-row');
+  if (rows.length !== railLinks.length) return;
+  rows.forEach((row, i) => {
+    const r = row.getBoundingClientRect();
+    railLinks[i].style.top = (r.top + r.height / 2) + 'px';
+  });
+}
+
+function updateRailActive() {
+  if (!railLinks.length) return;
+  const ctx = railContext();
+  if (ctx === 'works') {
     const ci = sectionIndex();
     railLinks.forEach((a, i) => a.classList.toggle('active', i === ci));
+  } else if (ctx === 'index') {
+    railLinks.forEach((a, i) => a.classList.toggle('active', i === indexHoverIndex));
+  } else {
+    railLinks.forEach(a => a.classList.remove('active'));
   }
+}
+
+function updateRail() {
+  if (!worksRail) return;
+  const ctx = railContext();
+  worksRail.classList.toggle('on', ctx === 'index' || ctx === 'works');
+  if (ctx === 'index' || ctx === 'works') syncWorkNumPositions();
+  updateRailActive();
 }
 
 function goToDeck(i) {
@@ -121,9 +179,28 @@ if (worksSlide && worksRail) {
   let wtick = false;
   worksSlide.addEventListener('scroll', () => {
     if (wtick) return; wtick = true;
-    requestAnimationFrame(() => { updateRail(); wtick = false; });
+    requestAnimationFrame(() => { updateRailActive(); wtick = false; });
   }, { passive: true });
 }
+
+const indexSlide = document.querySelector('.index.slide');
+if (indexSlide) {
+  document.querySelectorAll('.index-row').forEach((row, i) => {
+    row.addEventListener('mouseenter', () => { indexHoverIndex = i; updateRailActive(); });
+    row.addEventListener('mouseleave', () => { indexHoverIndex = -1; updateRailActive(); });
+  });
+  let itick = false;
+  indexSlide.addEventListener('scroll', () => {
+    if (itick) return; itick = true;
+    requestAnimationFrame(() => { syncWorkNumPositions(); itick = false; });
+  }, { passive: true });
+}
+
+let rtick = false;
+window.addEventListener('resize', () => {
+  if (rtick) return; rtick = true;
+  requestAnimationFrame(() => { updateRail(); rtick = false; });
+});
 
 if (deck) {
   let dtick = false;
@@ -293,7 +370,13 @@ if (reducedMotion || !('IntersectionObserver' in window)) {
 } else {
   const ro = new IntersectionObserver(entries => {
     entries.forEach(e => {
-      if (e.isIntersecting) { revealItems(e.target); ro.unobserve(e.target); }
+      if (e.isIntersecting) {
+        revealItems(e.target);
+        ro.unobserve(e.target);
+        if (e.target.classList.contains('index')) {
+          setTimeout(syncWorkNumPositions, MAX_DELAY * 1000 + 120);
+        }
+      }
     });
   }, { threshold: 0.25 });
   revealRoots.forEach(el => ro.observe(el));

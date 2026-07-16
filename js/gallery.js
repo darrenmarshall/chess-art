@@ -7,13 +7,24 @@ const gallery = document.getElementById('gallery');
 const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const scrollOpts = { behavior: reducedMotion ? 'auto' : 'smooth' };
 
+function panelCaption(game, movesFilter) {
+  if (movesFilter === 'full') {
+    const mateIn = Math.ceil(game.moves.length / 2);
+    return `Mate in ${mateIn} move${mateIn === 1 ? '' : 's'}`;
+  }
+  const side = movesFilter === 'white';
+  const moves = game.moves.filter(m => m[2] === side);
+  const captures = moves.filter(m => m[3]).length;
+  return `${moves.length} move${moves.length === 1 ? '' : 's'}, ${captures} capture${captures === 1 ? '' : 's'}`;
+}
+
 games.forEach(game => {
   const winW = game.winner === 'white';
   const panelDefs = [
-    { cfgType:'white', label:game.white, role:'White', flipped:false, showW:true,  showB:false, movesFilter:'white', caption:'White ground · white moves · from White' },
-    { cfgType:'black', label:game.black, role:'Black', flipped:true,  showW:false, showB:true,  movesFilter:'black', caption:'Black ground · black moves · from Black' },
-    { cfgType:winW?'white':'black', label:winW?game.white:game.black, role:'Winner ★', flipped:!winW, showW:true, showB:true, movesFilter:'full', caption:`${winW?'White':'Black'} ground · full game · from ${winW?game.white:game.black}` },
-  ];
+    { cfgType:'white', label:game.white, role:'White', flipped:false, showW:true,  showB:false, movesFilter:'white' },
+    { cfgType:'black', label:game.black, role:'Black', flipped:true,  showW:false, showB:true,  movesFilter:'black' },
+    { cfgType:winW?'white':'black', label:winW?game.white:game.black, role:'Winner ★', flipped:!winW, showW:true, showB:true, movesFilter:'full' },
+  ].map(p => ({ ...p, caption: panelCaption(game, p.movesFilter) }));
 
   const bio = bios[game.index];
   const playerFor = p =>
