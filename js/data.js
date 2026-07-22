@@ -12,7 +12,7 @@ export const bios = {"01": {"players": [{"name": "Francesc de Castellví — Mar
 
 export const games = [
   {
-    index:'01', white:'Castellví', black:'Vinyoles', winner:'white',
+    index:'01', slug:'scachs-damor', white:'Castellví', black:'Vinyoles', winner:'white',
     title:'Scachs d’amor', sub:'Castellví vs. Vinyoles · Valencia, c. 1475',
     desc:'The oldest recorded game of chess as we now play it — not a match but a Valencian poem, sixty-four stanzas for sixty-four squares, staging Mars (Love) against Venus (Glory) with Mercury as arbiter. It is the first game to unleash the modern queen, whose sweeping new power drives the whole attack; White ends it with a pure mate, the queen landing on the very square where she began.',
     mat:{surface:'Vellum, scraped and pounced',finish:'Burnished gold-leaf ground',line:'Iron-gall ink, ruled with a reed pen — fine',nodes:'Vermilion and verdigris dots — the red and green standards'},
@@ -43,7 +43,7 @@ export const games = [
     ]
   },
   {
-    index:'02', white:'Anderssen', black:'Kieseritzky', winner:'white',
+    index:'02', slug:'immortal-game', white:'Anderssen', black:'Kieseritzky', winner:'white',
     title:'The Immortal Game', sub:'Anderssen vs. Kieseritzky · London, 1851',
     desc:'Played at a London coffeehouse during a break in the first international tournament — never part of official competition. Anderssen sacrificed both rooks, a bishop, and his queen to deliver checkmate. A combination so audacious it was dubbed immortal by the chess press decades later.',
     mat:{surface:'Raw linen, unsized',finish:'Clear wax seal only',line:'Waxed hemp twine, heavy gauge',nodes:'Iron cut nails, flat heads'},
@@ -77,7 +77,7 @@ export const games = [
     ]
   },
   {
-    index:'03', white:'Anderssen', black:'Dufresne', winner:'white',
+    index:'03', slug:'evergreen-game', white:'Anderssen', black:'Dufresne', winner:'white',
     title:'The Evergreen Game', sub:'Anderssen vs. Dufresne · Berlin, 1852',
     desc:'A private game between Anderssen and his student, not published for nearly twenty years. Steinitz called it "evergreen" for its perennial freshness. Anderssen again sacrificed his queen — leading to a double-rook sacrifice and a smothered mate.',
     mat:{surface:'Slate panel',finish:'Chalk line, raw — no wire',line:'Chalk / chalk pastel drawn directly',nodes:'Small iron tacks'},
@@ -112,7 +112,7 @@ export const games = [
     ]
   },
   {
-    index:'04', white:'Morphy', black:'Duke/Count', winner:'white',
+    index:'04', slug:'opera-game', white:'Morphy', black:'Duke/Count', winner:'white',
     title:'The Opera Game', sub:'Morphy vs. Duke of Brunswick & Count Isouard · Paris, 1858',
     desc:'Played during The Barber of Seville at the Paris Opéra, in a private box, by gaslight. Against two noblemen consulting together, Morphy dispatched them in 17 moves — a masterclass in development and open-file pressure.',
     mat:{surface:'Deep burgundy oil ground, cold wax over',finish:'Clear cold wax',line:'Silk thread, fine gauge, gold-filled',nodes:'Gilt pins — corsage / military style'},
@@ -140,7 +140,7 @@ export const games = [
     ]
   },
   {
-    index:'05', white:'Byrne', black:'Fischer', winner:'black',
+    index:'05', slug:'game-of-the-century', white:'Byrne', black:'Fischer', winner:'black',
     title:'The Game of the Century', sub:'Byrne vs. Fischer · New York, 1956',
     desc:"Bobby Fischer was 13 years old. Playing Black, he sacrificed his queen on move 17 to initiate a combination so deep that grandmasters doubted it was sound. The resulting king hunt was called the game of the century by Hans Kmoch.",
     mat:{surface:'Black cold wax, textured',finish:'Cold wax, hand-worked',line:"Copper wire — heavier gauge for Fischer's moves",nodes:'Brass brads'},
@@ -191,7 +191,7 @@ export const games = [
     ]
   },
   {
-    index:'06', white:'Kasparov', black:'Topalov', winner:'white',
+    index:'06', slug:'evergreen-machine-age', white:'Kasparov', black:'Topalov', winner:'white',
     title:'The Evergreen of the Machine Age', sub:'Kasparov vs. Topalov · Wijk aan Zee, 1999',
     desc:'Ranked by many as the greatest game ever played by a world champion. Kasparov sacrificed his rook on move 24, then maneuvered his king into the center to win material. The depth of calculation stretched beyond what any human could reasonably foresee.',
     mat:{surface:'Black gesso, smooth — no texture',finish:'Flat, no wax',line:'Silver-plated copper wire, medium gauge',nodes:'Stainless steel ball bearings, adhered'},
@@ -237,7 +237,7 @@ export const games = [
     ]
   },
   {
-    index:'07', white:'Deep Blue', black:'Kasparov', winner:'white',
+    index:'07', slug:'machine-wins', white:'Deep Blue', black:'Kasparov', winner:'white',
     title:'The Machine Wins', sub:'Deep Blue vs. Kasparov · New York, 1997',
     desc:"The moment a machine defeated the world chess champion in match play for the first time. Deep Blue played a quiet pawn move sacrificing material for long-term positional advantage. Kasparov resigned the next morning.",
     mat:{surface:'Matte black acrylic, flat — no wax',finish:'Dead surface, no texture',line:'Deep Blue: bare circuit wire, soldered. Kasparov: copper wire, strung',nodes:'Deep Blue: solder points + electronic components. Kasparov: brass brads'},
@@ -278,7 +278,7 @@ export const games = [
     ]
   },
   {
-    index:'08', white:'Fischer', black:'Spassky', winner:'white',
+    index:'08', slug:'queens-gambit-masterpiece', white:'Fischer', black:'Spassky', winner:'white',
     title:"The Queen's Gambit Masterpiece", sub:'Fischer vs. Spassky, Game 6 · Reykjavik, 1972',
     desc:"The decisive turning point in the most politically charged match in chess history. Fischer played a Queen's Gambit — a surprise from his lifelong 1.e4 — and produced a positional masterpiece. Spassky applauded from the board. The applause made headlines around the world.",
     mat:{surface:'Split canvas — white gesso / black cold wax, bleeding at center',finish:'Cold wax (black side), raw gesso (white side)',line:'Fischer: American copper wire. Spassky: iron wire, slightly rusted',nodes:'Two brad types — one per player. Cross-center moves get opposing node'},
@@ -329,7 +329,7 @@ export const games = [
     ]
   },
   {
-    index:'09', white:'Euwe', black:'Loman', winner:'white',
+    index:'09', slug:'pearl-of-zandvoort', white:'Euwe', black:'Loman', winner:'white',
     title:'The Pearl of Zandvoort', sub:'Euwe vs. Loman · Amsterdam, 1923',
     desc:"A dazzling sacrificial attack by the future world champion Max Euwe, played at 22. He offered his queen and methodically dismantled his opponent's defenses. Dutch commentators nicknamed it the Pearl of Zandvoort.",
     mat:{surface:'White gesso, pencil grid ruled beneath cold wax',finish:'Clear cold wax — grid visible but submerged',line:'Black annealed steel wire, fine gauge',nodes:'Flat black nail heads, flush with surface'},
@@ -360,7 +360,7 @@ export const games = [
     ]
   },
   {
-    index:'10', white:'Fischer', black:'Larsen', winner:'white',
+    index:'10', slug:'dragon-slain', white:'Fischer', black:'Larsen', winner:'white',
     title:'The Dragon Slain', sub:'Fischer vs. Larsen · Candidates Match · Denver, 1971',
     desc:"Fischer defeated Larsen 6–0 — a perfect score against one of the world's top players. This game demonstrated Fischer's clinical destruction of the Sicilian Dragon. Within the year Fischer won the Candidates and then the World Championship.",
     mat:{surface:'Raw wood panel, clear wax seal — no gesso',finish:'Grain shows through',line:'Bare copper wire, heavy gauge — no plating',nodes:'Copper cut tacks, hammered flush'},
@@ -402,7 +402,7 @@ export const games = [
     ]
   },
   {
-    index:'11', white:'Polgar', black:'Shirov', winner:'white',
+    index:'11', slug:'polgar-brilliancy', white:'Polgar', black:'Shirov', winner:'white',
     title:'The Polgar Brilliancy', sub:'Polgar vs. Shirov · Buenos Aires, 1994',
     desc:'Judith Polgar, at 17 the highest-rated woman in history, played this extraordinary tactical game against Alexei Shirov. A speculative bishop sacrifice opened lines requiring computer-level calculation to justify.',
     mat:{surface:'Silver leaf under black cold wax',finish:'Glimpsed at angles only',line:"Fine silver wire, oxidized dark. Sacrificial sequence in bright unoxidized silver",nodes:"Small silver-toned pins. Polgar's sacrifice nodes in bright unoxidized silver"},

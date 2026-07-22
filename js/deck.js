@@ -1,6 +1,7 @@
 import { games, isDark } from './data.js';
 import { getPulse } from './board.js';
 import { resetStatementLoop, stopStatementLoop } from './statement.js';
+import { gameBySlug, resolveWorkRoute, workPath } from './routes.js';
 
 // ── Exhibition shell ──────────────────────────────────
 
@@ -17,7 +18,7 @@ if (worksRail) {
   games.forEach(g => {
     const a = document.createElement('a');
     a.className = 'wr-num';
-    a.href = '#work-' + g.index;
+    a.href = workPath(g.slug);
     a.textContent = g.index;
     a.title = g.title;
     a.setAttribute('aria-label', 'Work ' + g.index + ' — ' + g.title);
@@ -53,6 +54,7 @@ function updateDeckUI() {
   if (deckControls) deckControls.classList.add('on');
   topbar.classList.toggle('on', deckIndex > 0);
   updateRail();
+  syncWorkUrl();
 
   const onStmt = onStatement();
   if (onStmt && !onStatementPrev) resetStatementLoop();
@@ -150,6 +152,41 @@ const sectionIndex = () => {
   if (!s.length || !worksSlide) return 0;
   return Math.max(0, Math.min(s.length - 1, Math.round(worksSlide.scrollTop / worksSlide.clientHeight)));
 };
+const DEFAULT_TITLE = document.title;
+
+function navigateToWork(game, { behavior } = {}) {
+  if (!game || !worksSlide) return;
+  const sec = document.getElementById('work-' + game.index);
+  if (!sec) return;
+  const scrollBehavior = behavior ?? (reducedMotion ? 'auto' : 'smooth');
+  const slides = panels();
+  const deckI = slides.indexOf(worksSlide);
+  if (deckI >= 0) {
+    deck.scrollTo({ left: deckI * window.innerWidth, behavior: scrollBehavior });
+  }
+  const si = sectionsOf().indexOf(sec);
+  if (si >= 0) {
+    worksSlide.scrollTo({ top: si * worksSlide.clientHeight, behavior: scrollBehavior });
+  }
+  document.title = game.title + ' — en passant';
+  requestAnimationFrame(() => updateDeckUI());
+}
+
+function syncWorkUrl() {
+  const ctx = railContext();
+  if (ctx === 'works') {
+    const game = games[sectionIndex()];
+    if (!game) return;
+    const path = workPath(game.slug);
+    if (location.pathname !== path) history.replaceState({ work: game.slug }, '', path);
+    if (document.title !== game.title + ' — en passant') {
+      document.title = game.title + ' — en passant';
+    }
+  } else if (/^\/work\//.test(location.pathname)) {
+    history.replaceState(null, '', '/');
+    document.title = DEFAULT_TITLE;
+  }
+}
 function goToSection(i) {
   const s = sectionsOf();
   if (!s.length || !worksSlide) return;
@@ -179,7 +216,7 @@ if (worksSlide && worksRail) {
   let wtick = false;
   worksSlide.addEventListener('scroll', () => {
     if (wtick) return; wtick = true;
-    requestAnimationFrame(() => { updateRailActive(); wtick = false; });
+    requestAnimationFrame(() => { updateRailActive(); syncWorkUrl(); wtick = false; });
   }, { passive: true });
 }
 
@@ -273,8 +310,51 @@ if (deck) {
   updateDeckUI();
 }
 
+const pendingWork = resolveWorkRoute();
+if (pendingWork) {
+  history.replaceState({ work: pendingWork.slug }, '', workPath(pendingWork.slug));
+  requestAnimationFrame(() => requestAnimationFrame(() => navigateToWork(pendingWork, { behavior: 'auto' })));
+}
+
+window.addEventListener('popstate', () => {
+  const game = resolveWorkRoute();
+  if (game) navigateToWork(game, { behavior: 'auto' });
+  else {
+    document.title = DEFAULT_TITLE;
+    goToDeck(0);
+  }
+});
+
+// Work slugs and legacy #work-XX anchors
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href]');
+  if (!a) return;
+  const href = a.getAttribute('href');
+  if (!href) return;
+
+  const workMatch = href.match(/^\/work\/([^/?#]+)\/?$/);
+  if (workMatch) {
+    e.preventDefault();
+    const game = gameBySlug(decodeURIComponent(workMatch[1]));
+    if (game) {
+      history.pushState({ work: game.slug }, '', workPath(game.slug));
+      navigateToWork(game, { behavior: reducedMotion ? 'auto' : 'smooth' });
+    }
+    return;
+  }
+
+  if (href.startsWith('#work-')) {
+    const game = games.find(g => g.index === href.slice(7));
+    if (game) {
+      e.preventDefault();
+      history.pushState({ work: game.slug }, '', workPath(game.slug));
+      navigateToWork(game, { behavior: reducedMotion ? 'auto' : 'smooth' });
+    }
+  }
+});
+
 // In-page anchors move the deck horizontally
-document.querySelectorAll('a[href^="#"]').forEach(a => {
+document.querySelectorAll('a[href^="#"]:not([href^="#work-"])').forEach(a => {
   a.addEventListener('click', e => {
     const id = a.getAttribute('href').slice(1);
     const target = id && document.getElementById(id);

@@ -1,4 +1,5 @@
 import { games, bios } from './data.js';
+import { workPath } from './routes.js';
 import { renderPanel, registerPulse } from './board.js';
 import { openOverlay } from './watch.js';
 import { POEM_HTML } from './poem.js';
@@ -37,6 +38,7 @@ games.forEach(game => {
   const section = document.createElement('section');
   section.className = 'game-section reveal';
   section.id = 'work-' + game.index;
+  section.dataset.slug = game.slug;
 
   // ── Pinned header: work counter, title, players · date — stays put ──
   const head = document.createElement('div'); head.className = 'game-head'; head.dataset.reveal = '';
@@ -210,7 +212,7 @@ if (indexList) {
     const a = document.createElement('a');
     a.className = 'index-row';
     a.dataset.reveal = '';
-    a.href = '#work-' + g.index;
+    a.href = workPath(g.slug);
     a.innerHTML = `<div class="index-num">${g.index}</div>` +
       `<div class="index-main"><div class="index-title">${g.title}</div>` +
       `<div class="index-players">${g.white} vs. ${g.black}</div></div>` +
